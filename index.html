@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tradutor de Documentos</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Tradutor de Documentos (.txt)</h1>
+
+        <!-- Passo 1: seleÃ§Ã£o do arquivo -->
+        <input type="file" id="inputArquivo" accept=".txt,.docx">
+
+        <!-- Passo 2: confirmar ou excluir -->
+        <div id="areaConfirmacao" class="oculto">
+            <p>Arquivo selecionado: <span id="nomeArquivo"></span></p>
+            <button id="btnConfirmar">Confirmar envio</button>
+            <button id="btnExcluir">Excluir</button>
+        </div>
+
+        <!-- Passo 3: aguardando processamento -->
+        <div id="areaCarregando" class="oculto">
+            <div class="spinner"></div>
+            <p>Traduzindo documento, aguarde...</p>
+        </div>
+
+        <!-- Passo 4: download do resultado -->
+        <div id="areaResultado" class="oculto">
+            <p>Tradução concluída!</p>
+            <button id="btnBaixar">Baixar Tradução</button>
+        </div>
+
+        <!-- Mensagens de erro -->
+        <p id="mensagemErro" class="erro oculto"></p>
+    </div>
+
+    <script src="/static/script.js?v=2"></script>
+</body>
+
+</html>

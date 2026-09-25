@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 400px;
+    text-align: center;
+}
+
+button {
+    margin: 8px 4px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#btnConfirmar, #btnBaixar {
+    background-color: #2e7d32;
+    color: white;
+}
+
+#btnExcluir {
+    background-color: #c62828;
+    color: white;
+}
+
+.oculto {
+    display: none;
+}
+
+.erro {
+    color: #c62828;
+    font-weight: bold;
+}
+
+.spinner {
+    margin: 15px auto;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ddd;
+    border-top: 4px solid #2e7d32;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+    100% { transform: rotate(360deg); }
+}

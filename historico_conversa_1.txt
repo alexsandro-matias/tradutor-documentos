@@ -1,0 +1,198 @@
+HISTORICO DA CONVERSA - PROJETO TRADUTOR DE DOCUMENTOS
+Data de referencia: 25/09/2026
+Projeto: C:\Users\PB7P\projeto-traducao
+
+OBJETIVO DESTE ARQUIVO
+Este documento registra o contexto da conversa, as alteracoes feitas e o estado
+atual do projeto para que outra IA possa continuar o trabalho sem precisar
+reconstruir o historico.
+
+============================================================
+1. PEDIDO INICIAL: GERAR DOCUMENTACAO DO PROJETO
+============================================================
+
+Usuario:
+"preciso que gere o arquivo .README informando a ideia projeto, assim como um
+passo a passo de como instalar as bibliotecas e execução de comandos"
+
+O que foi feito:
+- A estrutura e os arquivos de codigo foram examinados.
+- Foi criado o arquivo .README na raiz do projeto.
+- O README descrevia inicialmente a traducao de arquivos .txt por uma aplicacao
+  web com FastAPI, Argos Translate, instalacao de dependencias, ativacao de
+  ambiente virtual, inicializacao com Uvicorn, acesso a interface e API.
+- O comando de inicializacao documentado foi:
+  python -m uvicorn app:app --reload
+
+============================================================
+2. COMPARACAO COM TEXTO COLADO PELO USUARIO
+============================================================
+
+Usuario explicou que outra IA sugeriu uma nova versao e colou o conteudo no fim
+do .README. Pediu para avaliar o que faltava, acrescentar o que fosse relevante
+e apagar o texto colado no final.
+
+O que foi feito:
+- O texto colado foi comparado com o README existente.
+- Foram incorporados os pontos novos relevantes: solucoes abertas/gratuitas,
+  execucao local depois da instalacao, funcionalidades da interface, frontend
+  sem framework, arquitetura extensivel e possibilidade futura de novos
+  formatos/idiomas/motores.
+- A alegacao de funcionamento offline foi qualificada: internet pode ser
+  necessaria para instalar/baixar o pacote de idiomas pela primeira vez.
+- O texto duplicado colado no fim do README foi removido.
+
+============================================================
+3. ATUALIZACAO PARA SUPORTE A .TXT E .DOCX
+============================================================
+
+Usuario pediu para atualizar o README de acordo com as funcionalidades de
+traducao .docx e .txt e forneceu uma proposta sugerida por outra IA.
+
+Foram verificados os arquivos e implementacao atuais. Confirmado no codigo:
+- O endpoint POST /traduzir aceita .txt e .docx.
+- A traducao padrao e de ingles (en) para portugues (pb).
+- O backend extrai paragrafos, traduz cada paragrafo e gera um arquivo binario.
+- A resposta de sucesso nao e JSON: e o proprio arquivo traduzido, com headers
+  Content-Type e Content-Disposition.
+- Os erros HTTP continuam sendo retornados como JSON.
+- O frontend faz upload e baixa o Blob recebido do servidor.
+- Existem os modulos tradutor/leitor_arquivo.py e
+  tradutor/gerador_arquivo.py.
+- A dependencia python-docx consta em requirements.txt.
+- O sentencizer local usa expressoes regulares para evitar downloads de modelos
+  auxiliares Stanza/SpaCy.
+
+O arquivo .README foi atualizado para incluir:
+- Fluxo e funcionalidades de traducao .txt e .docx;
+- Instalacao no Windows, Linux e macOS;
+- Configuracao ARGOS_CHUNK_TYPE e ARGOS_DEBUG;
+- Detalhes do endpoint com resposta binaria e exemplos de curl;
+- Estrutura atual de arquivos;
+- Limitacoes dos documentos .docx;
+- Troubleshooting de certificado corporativo/Netskope e codificacao UTF-8;
+- Roadmap.
+
+Limitacoes documentadas:
+- .doc e outros formatos nao sao suportados; apenas .txt e .docx.
+- Arquivos .txt devem usar UTF-8.
+- O leitor de .docx extrai paragrafos e a geracao cria novo documento apenas
+  com os paragrafos traduzidos; a formatacao avancada, tabelas, imagens e
+  outros elementos nao sao preservados.
+- Arquivos grandes podem consumir memoria/tempo; o tamanho nao esta limitado
+  explicitamente.
+
+OBSERVACAO:
+O arquivo de documentacao chama-se literalmente ".README" (com ponto inicial),
+nao README.md.
+
+============================================================
+4. TAMANHO DO PROJETO E MODELO DO ARGOS TRANSLATE
+============================================================
+
+Usuario perguntou onde fica o arquivo do dicionario/modelo para poder apagar e
+enviar o projeto por email.
+
+Foi consultada a configuracao instalada do Argos Translate. Caminhos e tamanhos
+observados nesta maquina:
+
+- Pacotes/modelos instalados:
+  C:\Users\PB7P\.local\share\argos-translate\packages
+  Aproximadamente 79.1 MB (8 arquivos).
+
+- Downloads temporarios do Argos:
+  C:\Users\PB7P\.local\cache\argos-translate\downloads
+  Aproximadamente 63.1 MB (1 arquivo).
+
+- Ambiente virtual do projeto:
+  C:\Users\PB7P\projeto-traducao\.venv
+  Aproximadamente 4.2 GB (33,148 arquivos).
+
+Conclusao explicada ao usuario:
+- O ambiente .venv e o maior componente de tamanho.
+- O modelo do Argos fica fora da pasta do projeto e nao sera incluido ao
+  compactar somente C:\Users\PB7P\projeto-traducao.
+- Para enviar o codigo por email, pode-se excluir/omitir .venv do arquivo
+  compactado e recriar o ambiente depois com requirements.txt.
+- Se o modelo do Argos for apagado, sera necessario baixa-lo novamente para
+  traduzir. Na primeira execucao pode ser necessaria conexao com internet.
+- O usuario perguntou se o modelo tambem fica nesse diretorio; foi confirmado
+  que sim: packages. Tambem foi esclarecido que ele fica fora do projeto.
+
+============================================================
+5. COMO EXECUTAR O PROJETO FASTAPI
+============================================================
+
+Usuario perguntou como executar o projeto.
+
+Com ambiente virtual existente, no PowerShell:
+
+  cd C:\Users\PB7P\projeto-traducao
+  .\.venv\Scripts\Activate.ps1
+  python -m uvicorn app:app --reload
+
+Depois, abrir:
+
+  http://127.0.0.1:8000
+
+Para parar o servidor: Ctrl+C.
+
+Se .venv nao existir, recriar e instalar dependencias:
+
+  cd C:\Users\PB7P\projeto-traducao
+  py -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  python -m pip install --upgrade pip
+  python -m pip install -r requirements.txt
+  python -m uvicorn app:app --reload
+
+A primeira inicializacao pode tentar baixar o modelo de traducao Argos caso ele
+nao esteja instalado localmente.
+
+============================================================
+6. ESTADO ATUAL / CONTEXTO PARA CONTINUACAO
+============================================================
+
+Projeto localizado em:
+  C:\Users\PB7P\projeto-traducao
+
+Arquivos relevantes observados:
+- app.py
+- requirements.txt
+- routers\traducao.py
+- tradutor\__init__.py
+- tradutor\tradutor_documento.py
+- tradutor\sentencizer.py
+- tradutor\leitor_arquivo.py
+- tradutor\gerador_arquivo.py
+- static\index.html
+- static\script.js
+- static\style.css
+- .README
+
+Funcionalidade atual observada:
+- Aplicacao web FastAPI.
+- Upload de .txt e .docx pela interface.
+- Traducao Argos Translate en -> pb.
+- Traducao de paragrafos.
+- Retorno binario do arquivo traduzido em mesmo formato/extensao, nomeado com
+  prefixo "traduzido_".
+- A UI esta em http://127.0.0.1:8000 quando o servidor esta ativo.
+- Swagger: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
+
+Dependencias no requirements.txt incluem FastAPI, Uvicorn, python-multipart,
+argostranslate e python-docx, alem de dependencias transitivas fixadas.
+
+O .README foi atualizado para documentar .txt/.docx, API, ambiente, comandos,
+limitacoes e troubleshooting. Nao foi solicitada alteracao funcional do codigo
+depois dessa atualizacao.
+
+Se for necessario reduzir o tamanho para enviar por email:
+- Nao inclua .venv no ZIP.
+- Mantenha requirements.txt e os arquivos do projeto.
+- O modelo Argos nao esta dentro do projeto; pode ser necessario que o
+  destinatario tenha internet para baixa-lo ao iniciar a aplicacao pela primeira
+  vez.
+
+FIM DO HISTORICO

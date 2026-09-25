@@ -1,0 +1,302 @@
+# Tradutor de Documentos
+
+Aplicação web para traduzir arquivos de texto (`.txt`) e documentos Word
+(`.docx`) de forma local. O usuário seleciona um arquivo pela interface,
+confirma o envio, aguarda o processamento e baixa uma nova cópia traduzida no
+mesmo formato do arquivo original.
+
+O backend foi desenvolvido com **FastAPI** e utiliza o **Argos Translate** para
+realizar a tradução sem depender de uma API externa durante o processamento.
+Na primeira execução, o Argos Translate pode baixar automaticamente o pacote de
+tradução configurado no projeto.
+
+O projeto utiliza soluções abertas e gratuitas, sem custo por requisição ou
+dependência de APIs pagas. Depois que as bibliotecas e o pacote de idiomas são
+instalados, o processamento pode ocorrer localmente, sem internet.
+
+## Ideia do projeto
+
+O projeto simplifica a tradução de documentos por meio de uma interface web:
+
+1. O usuário seleciona um arquivo `.txt` ou `.docx`.
+2. A aplicação identifica o formato e extrai o conteúdo em parágrafos.
+3. O conteúdo é enviado para a API `POST /traduzir`.
+4. Cada parágrafo é traduzido pelo Argos Translate, mantendo a ordem original.
+5. Um novo arquivo é gerado no mesmo formato do arquivo enviado.
+6. O navegador disponibiliza o resultado para download com o prefixo
+   `traduzido_`.
+
+Atualmente, o tradutor é inicializado com o par de idiomas `en` (inglês) para
+`pb` (português do Brasil), conforme definido em `routers/traducao.py`.
+
+A arquitetura foi mantida simples e extensível, permitindo evoluções futuras
+como suporte a novos formatos de arquivo, novos pares de idiomas e novos
+motores de tradução.
+
+## Funcionalidades
+
+- Upload de arquivos `.txt` ou `.docx` pela interface web;
+- Confirmação do envio ou exclusão do arquivo antes da tradução;
+- Indicador visual de processamento durante a tradução;
+- Validação da extensão e do conteúdo do arquivo;
+- Leitura de arquivos `.txt` em UTF-8;
+- Extração de parágrafos de documentos `.docx`;
+- Tradução parágrafo por parágrafo;
+- Geração do resultado no mesmo formato do arquivo original;
+- Download do arquivo traduzido diretamente pelo navegador.
+
+## Tecnologias utilizadas
+
+- Python;
+- FastAPI;
+- Uvicorn;
+- Argos Translate;
+- `python-docx`;
+- HTML, CSS e JavaScript puro, sem framework.
+
+As dependências utilizadas estão registradas em `requirements.txt`.
+
+O Argos Translate é um motor de tradução open source baseado em modelos
+neurais. O `python-docx` é utilizado para ler e gerar documentos `.docx`.
+
+## Pré-requisitos
+
+- Python 3.10 ou superior;
+- `pip`;
+- Acesso à internet na primeira instalação, caso o pacote de tradução ainda
+  não esteja disponível localmente;
+- Windows, Linux ou macOS.
+
+## Instalação no Windows
+
+Abra o PowerShell na pasta do projeto:
+
+```powershell
+cd C:\Users\PB7P\projeto-traducao
+```
+
+Crie um ambiente virtual:
+
+```powershell
+py -m venv .venv
+```
+
+Ative o ambiente virtual:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Se o PowerShell bloquear a ativação por política de execução, execute uma vez:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Depois, ative novamente:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Atualize o `pip` e instale as dependências:
+
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+O arquivo `requirements.txt` inclui dependências que podem ser grandes, como
+PyTorch e bibliotecas utilizadas pelo Argos Translate. A instalação pode levar
+alguns minutos e exigir espaço livre em disco.
+
+## Instalação no Linux ou macOS
+
+Na pasta do projeto, execute:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+## Configuração do ambiente Argos Translate
+
+O projeto define automaticamente, em `tradutor/__init__.py`, as variáveis:
+
+```python
+os.environ["ARGOS_CHUNK_TYPE"] = "MINISBD"
+os.environ["ARGOS_DEBUG"] = "0"
+```
+
+`ARGOS_CHUNK_TYPE` define o mecanismo de divisão de frases utilizado antes da
+tradução. O projeto substitui o `MiniSBDSentencizer` padrão por uma implementação
+local baseada em expressões regulares, em `tradutor/sentencizer.py`. Isso evita
+o download de modelos auxiliares do Stanza ou SpaCy.
+
+`ARGOS_DEBUG` mantém os logs detalhados do Argos Translate desativados. Ele pode
+ser alterado temporariamente para `1` durante uma investigação de problemas.
+
+Essas variáveis são definidas antes dos imports do pacote `argostranslate`, pois
+essa ordem é necessária para que a configuração seja aplicada corretamente.
+
+## Executando a aplicação
+
+Com o ambiente virtual ativado, inicie o servidor:
+
+```powershell
+python -m uvicorn app:app --reload
+```
+
+No Linux ou macOS, o comando é o mesmo:
+
+```bash
+python -m uvicorn app:app --reload
+```
+
+Abra a aplicação no navegador:
+
+<http://127.0.0.1:8000>
+
+A documentação interativa da API está disponível em:
+
+- Swagger UI: <http://127.0.0.1:8000/docs>
+- ReDoc: <http://127.0.0.1:8000/redoc>
+
+Para encerrar o servidor, pressione `Ctrl+C`.
+
+## Como usar a interface
+
+1. Acesse `http://127.0.0.1:8000`.
+2. Selecione um arquivo com extensão `.txt` ou `.docx`.
+3. Confira o nome exibido.
+4. Clique em **Confirmar envio** ou em **Excluir** para cancelar.
+5. Aguarde a mensagem de processamento terminar.
+6. Clique em **Baixar Tradução**.
+
+O arquivo baixado terá o nome `traduzido_<nome-original>`, mantendo a extensão
+original (`.txt` ou `.docx`).
+
+## Usando a API diretamente
+
+O endpoint aceita arquivos `.txt` e `.docx` no campo multipart `arquivo`:
+
+```powershell
+curl.exe -i -X POST `
+  -F "arquivo=@C:\caminho\para\arquivo.docx" `
+  http://127.0.0.1:8000/traduzir `
+  --output resposta_traduzida.docx
+```
+
+Para um arquivo de texto:
+
+```powershell
+curl.exe -i -X POST `
+  -F "arquivo=@C:\caminho\para\arquivo.txt" `
+  http://127.0.0.1:8000/traduzir `
+  --output resposta_traduzida.txt
+```
+
+Em caso de sucesso, a resposta é o próprio arquivo traduzido em formato
+binário, e não um JSON. O backend informa o tipo do arquivo no header
+`Content-Type` e o nome de download no header `Content-Disposition`.
+
+Possíveis respostas de erro:
+
+- `400`: arquivo que não é `.txt` ou `.docx`;
+- `400`: arquivo `.txt` que não pode ser lido como UTF-8;
+- `400`: arquivo vazio ou sem texto reconhecível;
+- `400`: erro durante a leitura do arquivo;
+- `500`: erro durante o processo de tradução.
+
+Exemplo de corpo de erro:
+
+```json
+{
+  "detail": "Apenas arquivos .txt ou .docx são aceitos."
+}
+```
+
+## Estrutura do projeto
+
+```text
+.
+├── app.py                         # Criação da aplicação FastAPI
+├── requirements.txt               # Dependências Python
+├── routers/
+│   ├── __init__.py
+│   └── traducao.py                # Endpoint POST /traduzir
+├── tradutor/
+│   ├── __init__.py                # Configuração e exports do pacote
+│   ├── tradutor_documento.py      # Integração com Argos Translate
+│   ├── sentencizer.py             # Separação local de frases
+│   ├── leitor_arquivo.py          # Leitura de .txt e .docx
+│   └── gerador_arquivo.py         # Geração da saída .txt ou .docx
+└── static/
+    ├── index.html                 # Interface web
+    ├── script.js                  # Upload e download do resultado
+    └── style.css                  # Estilos da interface
+```
+
+## Limitações conhecidas
+
+- Apenas arquivos `.txt` e `.docx` são suportados;
+- Arquivos `.doc` (formato binário legado do Word) não são suportados; salve-os
+  como `.docx` antes do upload;
+- Arquivos `.txt` devem estar codificados em UTF-8;
+- Em documentos `.docx`, o texto dos parágrafos é preservado, mas a geração de
+  saída não preserva formatação avançada, tabelas, imagens ou outros elementos
+  do documento original;
+- O tamanho dos arquivos não é limitado pela aplicação, mas arquivos grandes
+  podem consumir mais memória e levar mais tempo, pois a tradução é feita
+  parágrafo por parágrafo;
+- O pacote de tradução é carregado uma vez quando a aplicação é iniciada;
+- O par de idiomas está fixo em `routers/traducao.py` e pode ser alterado para
+  outro par suportado pelo Argos Translate.
+
+## Troubleshooting
+
+### Erro de certificado em ambientes corporativos
+
+Em ambientes com inspeção SSL, como os que utilizam Netskope, a variável
+`REQUESTS_CA_BUNDLE` pode apontar para um certificado inexistente e impedir o
+download inicial do pacote de tradução. O erro pode ser semelhante a:
+
+```text
+OSError: Could not find a suitable TLS CA certificate bundle, invalid path:
+C:\WINDOWS\IMECache\...\netskope-cert-bundle.pem
+```
+
+Primeiro, confirme com o suporte de TI da organização qual é o certificado
+corporativo correto. Para testar o bundle padrão do `certifi`, descubra seu
+caminho:
+
+```powershell
+python -c "import certifi; print(certifi.where())"
+```
+
+Depois, configure o caminho retornado apenas para a sessão atual do PowerShell:
+
+```powershell
+$env:REQUESTS_CA_BUNDLE = "C:\caminho\retornado\pelo\comando\cacert.pem"
+```
+
+### Problemas de codificação
+
+O projeto espera arquivos `.txt` e código-fonte em UTF-8. No VS Code, confirme
+que o arquivo está sendo salvo como **UTF-8**, preferencialmente sem BOM.
+
+Ao manipular arquivos no PowerShell, especifique a codificação quando
+necessário. Conteúdos copiados de ferramentas corporativas também podem conter
+caracteres invisíveis, como BOM ou caracteres zero-width. Nesses casos, revise
+o arquivo no editor e salve-o novamente como UTF-8.
+
+## Próximos passos
+
+- Suporte a upload de arquivos `.pdf`;
+- Preservação de formatação básica em documentos `.docx`;
+- Testes automatizados para os módulos de tradução e o endpoint;
+- Tratamento global de exceções no FastAPI;
+- Seleção de múltiplos pares de idiomas pela interface;
+- Containerização com Docker.
