@@ -14,19 +14,30 @@ class TradutorDocumento:
 
     def _carregar_traducao(self):
         installed_languages = argostranslate.translate.get_installed_languages()
-        from_lang = next((l for l in installed_languages if l.code == self.from_code), None)
+        from_lang = next(
+            (l for l in installed_languages if l.code == self.from_code), None
+        )
         to_lang = next((l for l in installed_languages if l.code == self.to_code), None)
 
-        if from_lang is None or to_lang is None or from_lang.get_translation(to_lang) is None:
+        if (
+            from_lang is None
+            or to_lang is None
+            or from_lang.get_translation(to_lang) is None
+        ):
             argostranslate.package.update_package_index()
             available_packages = argostranslate.package.get_available_packages()
             pacote = next(
-                (p for p in available_packages
-                 if p.from_code == self.from_code and p.to_code == self.to_code),
-                None
+                (
+                    p
+                    for p in available_packages
+                    if p.from_code == self.from_code and p.to_code == self.to_code
+                ),
+                None,
             )
             if pacote is None:
-                raise ValueError(f"Pacote {self.from_code} -> {self.to_code} nÃ£o encontrado.")
+                raise ValueError(
+                    f"Pacote {self.from_code} -> {self.to_code} nÃ£o encontrado."
+                )
             argostranslate.package.install_from_path(pacote.download())
 
             argostranslate.translate.get_installed_languages.cache_clear()
@@ -36,7 +47,9 @@ class TradutorDocumento:
 
         translation = from_lang.get_translation(to_lang)
         if translation is None:
-            raise RuntimeError(f"NÃ£o foi possÃ­vel carregar traduÃ§Ã£o {self.from_code} -> {self.to_code}.")
+            raise RuntimeError(
+                f"NÃ£o foi possÃ­vel carregar traduÃ§Ã£o {self.from_code} -> {self.to_code}."
+            )
         return translation
 
     def traduzir_texto(self, texto: str) -> str:
@@ -46,4 +59,3 @@ class TradutorDocumento:
     def traduzir_paragrafos(self, paragrafos: list[str]) -> list[str]:
         """Traduz uma lista de parÃ¡grafos, mantendo a ordem e a correspondÃªncia 1:1."""
         return [self.traduzir_texto(paragrafo) for paragrafo in paragrafos]
-

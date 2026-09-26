@@ -34,6 +34,11 @@ button {
     color: white;
 }
 
+#btnConfirmar:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 .oculto {
     display: none;
 }

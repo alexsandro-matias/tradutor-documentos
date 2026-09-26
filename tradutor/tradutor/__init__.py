@@ -1,4 +1,4 @@
-﻿import os
+import os
 
 # Precisa ser a PRIMEIRA coisa a executar no pacote, antes de qualquer import do argostranslate
 os.environ["ARGOS_CHUNK_TYPE"] = "MINISBD"
